@@ -113,6 +113,7 @@
 		die("Connection failed: " . $conn->connect_error);
 	}
 	
+	// searches each table for a 'Name' attribute equal to $name
 	$phone_atts = array("PhoneID", "Name", "ScreenSize", "Manufacturer", "RefreshRate");
 	getRowsWithName($name, "Phones", $phone_atts, $conn);
 	$tv_atts = array("TVID", "Name", "Size", "ScreenType", "HDR", "Resolution", "RefreshRate", "Manufacturer");
