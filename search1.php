@@ -84,7 +84,7 @@
 		{
 			echo "<center> <h2>$table</h2> </center>";
 			echo "<center>";
-			echo "<table>";
+			echo "<table class='inner'>";
 			
 			echo "<tr> <th>Name</th> <th>ItemID</th> </tr>";
 			// prints out each row that returned from the query

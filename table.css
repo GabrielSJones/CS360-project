@@ -4,3 +4,20 @@ table, th, td
 	border-collapse: collapse;
 	text-align: center;
 }
+
+th, td
+{
+	padding-left: 50px;
+	padding-right: 50px;
+}
+
+td
+{
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+table.inner
+{
+	background-color: #befaf2;
+}
