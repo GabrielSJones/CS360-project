@@ -53,6 +53,51 @@
 
 <?php
 	
+	// outputs a table of items from $table that are provided by $planID
+	function getItemsInPlan($planID, $table, $conn)
+	{
+		// gets the correct strings to input into the query based on the table it's pulling from
+		$IDName = "";
+		$item_type = "";
+		if ($table == "Phones")
+		{
+			$IDName = "PhoneID";
+			$item_type = "phone";
+		}
+		elseif ($table == "Televisions")
+		{
+			$IDName = "TVID";
+			$item_type = "television";
+		}
+		else
+		{
+			$IDName = "InternetID";
+			$item_type = "internet";
+		}
+		
+		// submits the query to $table to find all items provided by $planID
+		$query = "SELECT $table.Name as Name, provides.ItemID as ItemID FROM $table, provides WHERE provides.ItemType = '$item_type' AND provides.ItemID = $table.$IDName AND provides.PlanID = '$planID'";
+		$result = $conn->query($query);
+		
+		// if there are any results, output them in a table
+		if ($result->num_rows > 0)
+		{
+			echo "<center> <h2>$table</h2> </center>";
+			echo "<center>";
+			echo "<table>";
+			
+			echo "<tr> <th>Name</th> <th>ItemID</th> </tr>";
+			// prints out each row that returned from the query
+			while ($row = $result->fetch_assoc())
+			{
+				echo "<tr> <td>" . $row["Name"] . "</td> <td>" . $row["ItemID"] . "</td> </tr>";
+			}
+			
+			echo "</table>";
+			echo "</center>";
+		}
+	}
+	
 	// outputs a table of rows from a table with their 'Name' attribute equal to $name
 	function getRowsWithName($name, $table, $attributes, $conn)
 	{
@@ -74,6 +119,11 @@
 			{
 				echo "<th>$a</th>";
 			}
+			// if this is the Plans table, then print out an extra column to show what devices / internet the plan provides
+			if ($table == "Plans")
+			{
+				echo "<th>Provides</th>";
+			}
 			echo "</tr>";
 			
 			// prints out each row that was returned from the query
@@ -83,6 +133,16 @@
 				foreach ($attributes as $a)
 				{
 					echo "<td>" . $row["$a"] . "</td>";
+				}
+				if ($table == "Plans")
+				{
+					echo "<td>";
+					
+					getItemsInPlan($row["PlanID"], "Phones", $conn);
+					getItemsInPlan($row["PlanID"], "Televisions", $conn);
+					getItemsInPlan($row["PlanID"], "Internet", $conn);
+					
+					echo "</td>";
 				}
 				echo "</tr>";
 			}
