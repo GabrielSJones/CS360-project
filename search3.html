@@ -36,7 +36,7 @@
 								<ul class="dropdown-menu" aria-labelledby="dropdown03">
 									<li><a class="dropdown-item" href="search1.html">Type 1</a></li>
 									<li><a class="dropdown-item" href="search2.html">Type 2</a></li>
-									<li><a class="dropdown-item" href="search3.html">Type 3</a></li>
+									<li><a class="dropdown-item" href="search3.php">Type 3</a></li>
 								</ul>
 							</li>
 							<li class="nav-item">
@@ -54,10 +54,43 @@
 			</h1>
 			<form action="search3.php" method="post">
 				<center>
-					<input name="name" class="form-control" type="text" placeholder="Enter plan name to see available devices..." aria-label="Box" style="width: 600px">
+					<input name="name" class="form-control" type="text" placeholder="Enter a plan name from below to see available devices..." aria-label="Box" style="width: 600px">
 				</center>
 			</form>
 		</main>
 		<script src="bootstrap.bundle.min.js"></script>
+		
+		<form>
+				<center>
+				<?php
+					//this block displays names of all plans in db
+					
+					// variables used to log into the mysql server
+					$servername = "localhost";
+					$username = "root";
+					$password = "";
+					$dbname = "company_database";
+					
+					// connects to the mysql server and crashes if it can't connect
+					$conn = new mysqli($servername, $username, $password, $dbname);
+					if ($conn->connect_error) {
+						die("Connection failed: " . $conn->connect_error);
+					}
+					$sql = "SELECT Name FROM plans";
+						$result = $conn->query($sql);
+						echo "<center><h1>Available Plan Names</h1></center>";
+						if ($result->num_rows > 0) {
+							// output data of each row
+							while($row = $result->fetch_assoc()) {
+							//echo "<tr><td>" . $row["Name"] "</td></tr>";
+							echo $row["Name"] . "<br>";
+							}
+							echo "</table>";
+						} 
+						else { echo "0 plan results - probably this is an error"; }
+					$conn->close();				
+				?>
+				<center>
+		</form>
 	</body>
 </html>

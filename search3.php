@@ -3,6 +3,7 @@
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="bootstrap.min.css">
 		<link rel="stylesheet" href="navbar.css">
+		<link rel="stylesheet" href="table.css">
 		
 		<style>
 			.bd-placeholder-img
@@ -88,9 +89,12 @@
 	$internetresult = $conn->query($internetquery);
 	$televisionresult = $conn->query($televisionquery);
 	
+	echo "<center>";
+	echo "<h2>PHONES:</h2>";
+	echo "</center>";
 	if ($phonesresult->num_rows > 0)
 	{
-		echo "PHONES:";
+		//echo "PHONES:";
 		while ($row = $phonesresult->fetch_assoc())
 		{
 			echo "<center>";
@@ -104,9 +108,14 @@
 		echo "No phone(s) included in this plan";
 		echo "</center>";
 	}
+	
+	echo "<br>";
+	echo "<center>";
+	echo "<h2>INTERNET:</h2>";
+	echo "</center>";
 	if ($internetresult->num_rows > 0)
 	{
-		echo "INTERNET:";
+		//echo "INTERNET:";
 		while ($row = $internetresult->fetch_assoc())
 		{
 			echo "<center>";
@@ -120,9 +129,14 @@
 		echo "No internet provided in this plan";
 		echo "</center>";
 	}
+	
+	echo "<br>";
+	echo "<center>";
+	echo "<h2>TELEVISIONS:</h2>";
+	echo "</center>";
 	if ($televisionresult->num_rows > 0)
 	{
-		echo "TELEVISIONS:";
+		//echo "TELEVISIONS:";
 		while ($row = $televisionresult->fetch_assoc())
 		{
 			echo "<center>";
