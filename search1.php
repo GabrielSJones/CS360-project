@@ -3,6 +3,7 @@
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="bootstrap.min.css">
 		<link rel="stylesheet" href="navbar.css">
+		<link rel="stylesheet" href="table.css">
 		
 		<style>
 			.bd-placeholder-img
@@ -73,10 +74,22 @@
 	
 	if ($result->num_rows > 0)
 	{
+		echo "<center>";
+		echo "<h1>Phones</h1>";
+		echo "<table>";
+		echo "<tr> <th>PhoneID</th> <th>Screen Size</th> <th>Name</th> <th>Manufacturer</th> <th>Refresh Rate</th> </tr>";
 		while ($row = $result->fetch_assoc())
 		{
-			echo "id: " . $row["PhoneID"] . " - Screen Size: " . $row["ScreenSize"] . " - Name: " . $row["Name"] . " - Manufacturer: " . $row["Manufacturer"] . " - Refresh Rate: " . $row["RefreshRate"] . "<br>";
+			echo "<tr>";
+			echo "<td>" . $row["PhoneID"] . "</td>";
+			echo "<td>" . $row["ScreenSize"] . "</td>";
+			echo "<td>" . $row["Name"] . "</td>";
+			echo "<td>" . $row["Manufacturer"] . "</td>";
+			echo "<td>" . $row["RefreshRate"] . "</td>";
+			echo "</tr>";
 		}
+		echo "</table>";
+		echo "</center>";
 	}
 	else
 	{
