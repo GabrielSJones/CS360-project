@@ -53,6 +53,50 @@
 
 <?php
 	
+	// outputs a table of rows from a table with their 'Name' attribute equal to $name
+	function getRowsWithName($name, $table, $attributes, $conn)
+	{
+		// submits the query to $table to find all rows with $name
+		$query = "SELECT * FROM $table WHERE lower(Name) = lower('$name')";
+		$result = $conn->query($query);
+		
+		echo "<center> <h1>$table</h1> </center>";
+		
+		// if there are any results, output the table
+		if ($result->num_rows > 0)
+		{
+			echo "<center>";
+			echo "<table>";
+			
+			// prints each attribute name at the top of the table as table headers
+			echo "<tr>";
+			foreach ($attributes as $a)
+			{
+				echo "<th>$a</th>";
+			}
+			echo "</tr>";
+			
+			// prints out each row that was returned from the query
+			while ($row = $result->fetch_assoc())
+			{
+				echo "<tr>";
+				foreach ($attributes as $a)
+				{
+					echo "<td>" . $row["$a"] . "</td>";
+				}
+				echo "</tr>";
+			}
+			
+			echo "</table>";
+			echo "</center>";
+		}
+		// if there are no results
+		else
+		{
+			echo "<center> <p>No Results</p> </center>";
+		}
+	}
+	
 	// gets the user inputs from the search bar
 	$name = $_POST['name'];
 	
@@ -69,32 +113,8 @@
 		die("Connection failed: " . $conn->connect_error);
 	}
 	
-	$q = "SELECT * FROM phones WHERE Name = '$name'";
-	$result = $conn->query($q);
-	
-	if ($result->num_rows > 0)
-	{
-		echo "<center>";
-		echo "<h1>Phones</h1>";
-		echo "<table>";
-		echo "<tr> <th>PhoneID</th> <th>Screen Size</th> <th>Name</th> <th>Manufacturer</th> <th>Refresh Rate</th> </tr>";
-		while ($row = $result->fetch_assoc())
-		{
-			echo "<tr>";
-			echo "<td>" . $row["PhoneID"] . "</td>";
-			echo "<td>" . $row["ScreenSize"] . "</td>";
-			echo "<td>" . $row["Name"] . "</td>";
-			echo "<td>" . $row["Manufacturer"] . "</td>";
-			echo "<td>" . $row["RefreshRate"] . "</td>";
-			echo "</tr>";
-		}
-		echo "</table>";
-		echo "</center>";
-	}
-	else
-	{
-		echo "No results";
-	}
+	$phone_atts = array("PhoneID", "ScreenSize", "Name", "Manufacturer", "RefreshRate");
+	getRowsWithName($name, "Phones", $phone_atts, $conn);
 	
 	$conn->close();
 	
