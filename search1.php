@@ -113,8 +113,14 @@
 		die("Connection failed: " . $conn->connect_error);
 	}
 	
-	$phone_atts = array("PhoneID", "ScreenSize", "Name", "Manufacturer", "RefreshRate");
+	$phone_atts = array("PhoneID", "Name", "ScreenSize", "Manufacturer", "RefreshRate");
 	getRowsWithName($name, "Phones", $phone_atts, $conn);
+	$tv_atts = array("TVID", "Name", "Size", "ScreenType", "HDR", "Resolution", "RefreshRate", "Manufacturer");
+	getRowsWithName($name, "Televisions", $tv_atts, $conn);
+	$int_atts = array("InternetID", "Name", "DownloadSpeed", "UploadSpeed", "DataCap", "InternetType");
+	getRowsWithName($name, "Internet", $int_atts, $conn);
+	$plan_atts = array("PlanID", "Name", "Price");
+	getRowsWithName($name, "Plans", $plan_atts, $conn);
 	
 	$conn->close();
 	
