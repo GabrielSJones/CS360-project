@@ -57,3 +57,55 @@
 		<script src="bootstrap.bundle.min.js"></script>
 	</body>
 </html>
+
+<?php
+	
+	// gets values that were submitted by the form
+	$id = $_POST['ID'];
+	$name = $_POST['Name'];
+	$screenSize = $_POST['ScreenSize'];
+	$manufacturer = $_POST['Manufacturer'];
+	$refreshRate = $_POST['RefreshRate'];
+	
+	echo "<center>";
+	echo "<table>";
+	echo "<tr> <th>ID</th> <th>Name</th> <th>Screen Size</th> <th>Manufacturer</th> <th>Refresh Rate</th> </tr>";
+	echo "<tr> <td>$id</td> <td>$name</td> <td>$screenSize</td> <td>$manufacturer</td> <td>$refreshRate</td> </tr>";
+	echo "</table>";
+	echo "</center>";
+	
+	// variables used to log into the mysql server
+	$servername = "localhost";
+	$username = "root";
+	$password = "";
+	$dbname = "company_database";
+	
+	// connects to the mysql server and crashes if it can't connect
+	$conn = new mysqli($servername, $username, $password, $dbname);
+	if ($conn->connect_error)
+	{
+		die("Connection failed: " . $conn->connect_error);
+	}
+	
+	// check to make sure primary key is not already taken
+	$idCheck = "SELECT * FROM Phones WHERE PhoneID = '$id'";
+	$checkResults = $conn->query($idCheck);
+	// if it's not, then add the row to the table
+	if ($checkResults->num_rows < 1)
+	{
+		$query = "INSERT INTO Phones (PhoneID, Name, ScreenSize, Manufacturer, RefreshRate) VALUES ('$id', '$name', '$screenSize', '$manufacturer', '$refreshRate')";
+		if ($conn->query($query) === TRUE)
+		{
+			echo "<center> <h1>Row Added Successfully</h1> </center>";
+		}
+		else
+		{
+			echo "<center> <h1>Error: Row Was Not Added To The Table</h1> </center>";
+		}
+	}
+	else
+	{
+		echo "<center> <h1>Error: Row Was Not Added To The Table (ID already taken)</h1> </center>";
+	}
+	
+?>

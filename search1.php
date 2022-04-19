@@ -178,8 +178,8 @@
 					echo "</td>";
 				}
 				// prints out the buttons to edit or delete this row at the end of the table
-				echo "<td> <form action='edit.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-100 btn btn-primary btn-lg'>Edit</button> </form>";
-				echo "<form action='delete.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='btn btn-secondary'>Delete</button> </form> </td>";
+				echo "<td> <form action='edit.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-primary'>Edit</button> </form>";
+				echo "<form action='delete.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-danger'>Delete</button> </form> </td>";
 				echo "</tr>";
 			}
 			
