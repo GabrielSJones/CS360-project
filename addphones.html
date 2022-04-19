@@ -54,10 +54,36 @@
 					</div>
 				</div>
 			</nav>
+			<!-- Place to input values for the new row in the table -->
 			<center>
+				<h1>Add Row to Phones Table</h1>
 				<form action="addphones.php" method="post">
-					<label for="id">ID</label>
-					<input name="id" id="id" min="1" max="4294967296" class="form-control" type="number" placeholder="Search" aria-label="Search" style="width: 600px">
+					<table>
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Screen Size</th>
+							<th>Manufacturer</th>
+							<th>Refresh Rate</th>
+						</tr>
+						<tr>
+							<td>
+								<input name="ID" min="1" max="4294967296" class="form-control" type="number" placeholder="ID" aria-label="Search">
+							</td>
+							<td>
+								<input name="Name" class="form-control" type="text" placeholder="Name" aria-label="Search">
+							</td>
+							<td>
+								<input name="ScreenSize" min="1" max="4294967296" class="form-control" type="number" placeholder="Screen Size" aria-label="Search">
+							</td>
+							<td>
+								<input name="Manufacturer" class="form-control" type="text" placeholder="Manufacturer" aria-label="Search">
+							</td>
+							<td>
+								<input name="RefreshRate" min="1" max="4294967296" class="form-control" type="number" placeholder="Refresh Rate" aria-label="Search">
+							</td>
+						</tr>
+					</table>
 					<button name="submit" value="Submit" type="submit" class="btn btn-primary">Submit</button>
 				</form>
 			</center>
