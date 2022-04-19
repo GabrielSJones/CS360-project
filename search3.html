@@ -4,6 +4,7 @@
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="bootstrap.min.css">
 		<link rel="stylesheet" href="navbar.css">
+		<link rel="stylesheet" href="table.css">
 		
 		<style>
 			.bd-placeholder-img
@@ -76,16 +77,21 @@
 					if ($conn->connect_error) {
 						die("Connection failed: " . $conn->connect_error);
 					}
-					$sql = "SELECT Name FROM plans";
+					$sql = "SELECT Name,Price FROM plans ORDER BY `Price` ASC";
 						$result = $conn->query($sql);
-						echo "<center><h1>Available Plan Names</h1></center>";
+						echo "<br><table>";
+						echo "<tr><td><h1>Available Plan Names</h1></td><td><h1>Price</h1></td></tr></center>";
 						if ($result->num_rows > 0) {
+							
+							//echo "<table>";							
 							// output data of each row
 							while($row = $result->fetch_assoc()) {
-							//echo "<tr><td>" . $row["Name"] "</td></tr>";
-							echo $row["Name"] . "<br>";
+							echo "<tr><td>" . $row["Name"] ."</td><td>". $row["Price"]. "</td></tr>";
+							//echo $row["Name"] . "<br>";
 							}
+							
 							echo "</table>";
+							
 						} 
 						else { echo "0 plan results - probably this is an error"; }
 					$conn->close();				
