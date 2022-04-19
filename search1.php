@@ -101,9 +101,16 @@
 	// outputs a table of rows from a table with their 'Name' attribute equal to $name
 	function getRowsWithName($name, $table, $attributes, $conn)
 	{
-		// submits the query to $table to find all rows with $name
+		// submits the query to $table to find all rows that have a name value that matches $name exactly
 		$query = "SELECT * FROM $table WHERE lower(Name) = lower('$name')";
 		$result = $conn->query($query);
+		
+		// if there are no results from last query, try searching for items with similar names
+		if ($result->num_rows < 1)
+		{
+			$query = "SELECT * FROM $table WHERE lower(name) LIKE lower('%$name%')";
+			$result = $conn->query($query);
+		}
 		
 		// if there are any results, output the table
 		if ($result->num_rows > 0)
@@ -171,6 +178,14 @@
 			
 			echo "</table>";
 			echo "</center>";
+			
+			// since there were results, return 1
+			return 1;
+		}
+		else
+		{
+			// if there are no results, return 0
+			return 0;
 		}
 	}
 	
@@ -190,15 +205,23 @@
 		die("Connection failed: " . $conn->connect_error);
 	}
 	
+	$results = 0;
+	
 	// searches each table for a 'Name' attribute equal to $name
 	$phone_atts = array("PhoneID", "Name", "ScreenSize", "Manufacturer", "RefreshRate");
-	getRowsWithName($name, "Phones", $phone_atts, $conn);
+	$results += getRowsWithName($name, "Phones", $phone_atts, $conn);
 	$tv_atts = array("TVID", "Name", "Size", "ScreenType", "HDR", "Resolution", "RefreshRate", "Manufacturer");
-	getRowsWithName($name, "Televisions", $tv_atts, $conn);
+	$results += getRowsWithName($name, "Televisions", $tv_atts, $conn);
 	$int_atts = array("InternetID", "Name", "DownloadSpeed", "UploadSpeed", "DataCap", "InternetType");
-	getRowsWithName($name, "Internet", $int_atts, $conn);
+	$results += getRowsWithName($name, "Internet", $int_atts, $conn);
 	$plan_atts = array("PlanID", "Name", "Price");
-	getRowsWithName($name, "Plans", $plan_atts, $conn);
+	$results += getRowsWithName($name, "Plans", $plan_atts, $conn);
+	
+	// if there were not results from any of the tables, display 'No Results'
+	if ($results < 1)
+	{
+		echo "<center> <h1>No Results</h1> </center>";
+	}
 	
 	$conn->close();
 	
