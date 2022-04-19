@@ -51,6 +51,28 @@
 </html>
 
 <?php
-	$iteminfo = $_POST['iteminfo'];
-	echo $iteminfo;
+	$itemInfo = $_POST['iteminfo'];
+	$itemInfo = explode("+", $itemInfo);
+	
+	$itemID = "";
+	if ($itemInfo[0] == "Phones")
+	{
+		$itemID = "PhoneID";
+	}
+	elseif ($itemInfo[0] == "Televisions")
+	{
+		$itemID = "TVID";
+	}
+	elseif ($itemInfo[0] == "Internet")
+	{
+		$itemID = "InternetID";
+	}
+	elseif ($itemInfo[0] == "Plans")
+	{
+		$itemID = "PlanID";
+		echo "DELETE FROM Provides WHERE PlanID = '$itemInfo[1]'";
+		echo "<br>";
+	}
+	
+	echo "DELETE FROM $itemInfo[0] WHERE $itemID = '$itemInfo[1]'";
 ?>

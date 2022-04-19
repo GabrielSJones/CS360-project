@@ -105,11 +105,10 @@
 		$query = "SELECT * FROM $table WHERE lower(Name) = lower('$name')";
 		$result = $conn->query($query);
 		
-		echo "<center> <h1>$table</h1> </center>";
-		
 		// if there are any results, output the table
 		if ($result->num_rows > 0)
 		{
+			echo "<center> <h1>$table</h1> </center>";
 			echo "<center>";
 			echo "<table>";
 			
@@ -134,6 +133,7 @@
 				{
 					echo "<td>" . $row["$a"] . "</td>";
 				}
+				// if this is from the plans table, then print out all devices that the plan offers in subtables
 				if ($table == "Plans")
 				{
 					echo "<td>";
@@ -144,6 +144,7 @@
 					
 					echo "</td>";
 				}
+				// prints out the buttons to edit or delete this row at the end of the table
 				echo "<td> <form action='edit.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-100 btn btn-primary btn-lg'>Edit</button> </form> </td>";
 				echo "<td> <form action='delete.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='btn btn-secondary'>Delete</button> </form> </td>";
 				echo "</tr>";
@@ -151,11 +152,6 @@
 			
 			echo "</table>";
 			echo "</center>";
-		}
-		// if there are no results
-		else
-		{
-			echo "<center> <p>No Results</p> </center>";
 		}
 	}
 	

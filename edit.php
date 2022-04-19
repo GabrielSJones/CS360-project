@@ -51,6 +51,32 @@
 </html>
 
 <?php
-	$iteminfo = $_POST['iteminfo'];
-	echo $iteminfo;
+	$itemInfo = $_POST['iteminfo'];
+	$itemInfo = explode("+", $itemInfo);
+	
+	$itemID = "";
+	if ($itemInfo[0] == "Phones")
+	{
+		$itemID = "PhoneID";
+	}
+	elseif ($itemInfo[0] == "Televisions")
+	{
+		$itemID = "TVID";
+	}
+	elseif ($itemInfo[0] == "Internet")
+	{
+		$itemID = "InternetID";
+	}
+	elseif ($itemInfo[0] == "Plans")
+	{
+		$itemID = "PlanID";
+		echo "SELECT $itemInfo[0].Name as Name, provides.ItemID as ItemID FROM Phones, provides WHERE provides.ItemType = 'phone' AND provides.ItemID = $itemInfo[0].$itemID AND provides.PlanID = '$itemInfo[1]'";
+		echo "<br>";
+		echo "SELECT $itemInfo[0].Name as Name, provides.ItemID as ItemID FROM Televisions, provides WHERE provides.ItemType = 'television' AND provides.ItemID = $itemInfo[0].$itemID AND provides.PlanID = '$itemInfo[1]'";
+		echo "<br>";
+		echo "SELECT $itemInfo[0].Name as Name, provides.ItemID as ItemID FROM Internet, provides WHERE provides.ItemType = 'internet' AND provides.ItemID = $itemInfo[0].$itemID AND provides.PlanID = '$itemInfo[1]'";
+		echo "<br>";
+	}
+	
+	echo "SELECT * FROM $itemInfo[0] WHERE $itemID = $itemInfo[1]";
 ?>
