@@ -96,18 +96,24 @@
 	$internetresult = $conn->query($internetquery);
 	$televisionresult = $conn->query($televisionquery);
 	
-	echo "<center>";
-	echo "<h2>PHONES:</h2>";
+	
+	echo "<center><h1>Everything included in the '$name'</h1></center>";
+		
+	
+	
+	echo "<br><center>";
+	echo "<h2>PHONES INCLUDED:</h2>";
 	echo "</center>";
 	if ($phonesresult->num_rows > 0)
 	{
-		//echo "PHONES:";
+		echo "<center><table><tr><th>Name</th><th>Screen size (in)</th><th>Manufacturer</th><th>Refresh Rate</th><th>PhoneID</th></tr>";
 		while ($row = $phonesresult->fetch_assoc())
 		{
-			echo "<center>";
-			echo "Screen Size: " . $row["ScreenSize"] . " - Name: " . $row["Name"] . " - Manufacturer: " . $row["Manufacturer"] . " - Refresh Rate: " . $row["RefreshRate"] . "<br>";
-			echo "</center>";
+			
+			echo "<tr><td>" . $row["Name"] . "</td><td>" . $row["ScreenSize"] . "</td><td>" . $row["Manufacturer"] . "</td><td>" . $row["RefreshRate"] . "</td><td>". $row["PhoneID"] . "</td></tr>";
+			
 		}
+		echo "</table></center>";
 	}
 	else
 	{	
@@ -118,17 +124,20 @@
 	
 	echo "<br>";
 	echo "<center>";
-	echo "<h2>INTERNET:</h2>";
+	echo "<h2>INTERNET INCLUDED:</h2>";
 	echo "</center>";
 	if ($internetresult->num_rows > 0)
 	{
-		//echo "INTERNET:";
+		echo "<center><table><tr><th>Name</th><th>Download Speed (mbps)</th><th>Upload Speed (mbps)</th><th>Data Cap (GBs)</th><th>Internet Type</th></td></tr>";
 		while ($row = $internetresult->fetch_assoc())
 		{
-			echo "<center>";
-			echo " - Download Speed: " . $row["DownloadSpeed"] . " - Upload Speed: " . $row["UploadSpeed"] . " - Name: " . $row["Name"] . " - DataCap: " . $row["DataCap"] . " - Internet Type: " . $row["InternetType"] . "<br>";
-			echo "</center>";
+			
+			echo "<tr><td>" . $row["Name"] . "</td><td>" . $row["DownloadSpeed"] . "</td><td>" . $row["UploadSpeed"] . "</td><td>" . $row["DataCap"] . "</td><td>". $row["InternetType"] . "</td></tr>";
+			
 		}
+		echo "</table></center>";
+		
+		
 	}
 	else
 	{	
@@ -139,17 +148,18 @@
 	
 	echo "<br>";
 	echo "<center>";
-	echo "<h2>TELEVISIONS:</h2>";
+	echo "<h2>TELEVISIONS INCLUDED:</h2>";
 	echo "</center>";
 	if ($televisionresult->num_rows > 0)
-	{
-		//echo "TELEVISIONS:";
+	{		
+		echo "<center><table><tr><th>Name</th><th>Resolution</th><th>Size (in)</th><th>Screen Type</th><th>Manufacturer</th><th>HDR Compatible</th><th>Refresh Rate</th></td></tr>";
 		while ($row = $televisionresult->fetch_assoc())
 		{
-			echo "<center>";
-			echo " - Resolution: " . $row["Resolution"] . " - Screen Size (inches): " . $row["Size"] . " - Screen Type: " . $row["ScreenType"] . " - HDR Compatible: " . $row["HDR"] . " - Name: " . $row["Name"] . " - Manufacturer: " . $row["Manufacturer"] . " - Refresh Rate: " . $row["RefreshRate"] . "<br>";
-			echo "</center>";
+			
+			echo "<tr><td>" . $row["Name"] . "</td><td>" . $row["Resolution"] . "</td><td>" . $row["Size"] . "</td><td>" . $row["ScreenType"] . "</td><td>" . $row["Manufacturer"] . "</td><td>". $row["HDR"] . "</td><td>". $row["RefreshRate"] . "</td></tr>";
+			
 		}
+		echo "</table></center>";
 	}
 	else
 	{	
