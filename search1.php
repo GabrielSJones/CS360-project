@@ -76,7 +76,7 @@
 		}
 		
 		// submits the query to $table to find all items provided by $planID
-		$query = "SELECT $table.Name as Name, provides.ItemID as ItemID FROM $table, provides WHERE provides.ItemType = '$item_type' AND provides.ItemID = $table.$IDName AND provides.PlanID = '$planID'";
+		$query = "SELECT $table.Name AS Name, provides.ItemID AS ItemID FROM $table, provides WHERE provides.ItemType = '$item_type' AND provides.ItemID = $table.$IDName AND provides.PlanID = '$planID'";
 		$result = $conn->query($query);
 		
 		// if there are any results, output them in a table
@@ -118,13 +118,15 @@
 			{
 				echo "<th>$a</th>";
 			}
-			// if this is the Plans table, then print out an extra column to show what devices / internet the plan provides
+			// if this is the Plans table, then print out 2 extra columns to show the companies that offers this plan and what devices / internet the plan provides
 			if ($table == "Plans")
 			{
+				echo "<th>Company / Companies</th>";
 				echo "<th>Provides</th>";
 			}
+			// print out an extra column header to label the edit and delete buttons
+			echo "<th>Change</th>";
 			echo "</tr>";
-			
 			// prints out each row that was returned from the query
 			while ($row = $result->fetch_assoc())
 			{
@@ -133,20 +135,37 @@
 				{
 					echo "<td>" . $row["$a"] . "</td>";
 				}
-				// if this is from the plans table, then print out all devices that the plan offers in subtables
+				// if this is from the plans table, then print out the companies that offer this plan and all items that the plan offers in subtables
 				if ($table == "Plans")
 				{
+					// prints out companies that offers this plan
+					$comp_query = "SELECT Companies.CompanyID as ID, Companies.Name AS Name FROM Offers, Companies WHERE Offers.PlanID = '" . $row["PlanID"] . "' AND Offers.CompanyID = Companies.CompanyID";
+					$comp_result = $conn->query($comp_query);
 					echo "<td>";
+					if ($comp_result->num_rows > 0)
+					{
+						echo "<center>";
+						echo "<table class='inner'>";
+						echo "<tr> <th>ID</th> <th>Name</th> </tr>";
+						while ($comp_row = $comp_result->fetch_assoc())
+						{
+							echo "<tr> <td>" . $comp_row["ID"] . "</td> <td>" . $comp_row["Name"] . "</td> </tr>";
+						}
+						echo "</table>";
+						echo "</center>";
+					}
+					echo "</td>";
 					
+					// prints out items that this plan provides
+					echo "<td>";
 					getItemsInPlan($row["PlanID"], "Phones", $conn);
 					getItemsInPlan($row["PlanID"], "Televisions", $conn);
 					getItemsInPlan($row["PlanID"], "Internet", $conn);
-					
 					echo "</td>";
 				}
 				// prints out the buttons to edit or delete this row at the end of the table
-				echo "<td> <form action='edit.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-100 btn btn-primary btn-lg'>Edit</button> </form> </td>";
-				echo "<td> <form action='delete.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='btn btn-secondary'>Delete</button> </form> </td>";
+				echo "<td> <form action='edit.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-100 btn btn-primary btn-lg'>Edit</button> </form>";
+				echo "<form action='delete.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='btn btn-secondary'>Delete</button> </form> </td>";
 				echo "</tr>";
 			}
 			
