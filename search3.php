@@ -75,6 +75,11 @@
 	{
 		die("Connection failed: " . $conn->connect_error);
 	}
+	$companiesthatofferquery = "SELECT companies.Name
+	FROM companies NATURAL JOIN
+	(SELECT CompanyID
+    FROM offers NATURAL JOIN plans
+    WHERE lower(plans.Name) = lower('$name') ) as offeringCompanies";
 	
 	$phonequery = "SELECT * FROM phones NATURAL JOIN
 	(SELECT PlanID, ItemID as PhoneID
@@ -91,13 +96,21 @@
 	FROM provides NATURAL JOIN plans
 	WHERE lower(Name) = lower('$name') AND lower(ItemType) = lower('television') ) as inputPlanID";
 	
-	
+	$companiesthatofferresult = $conn->query($companiesthatofferquery);
 	$phonesresult = $conn->query($phonequery);
 	$internetresult = $conn->query($internetquery);
 	$televisionresult = $conn->query($televisionquery);
 	
 	
-	echo "<center><h1>Everything included in the '$name'</h1></center>";
+	echo "<center><h1>'$name' detailed information</h1></center>";
+	
+	if ($companiesthatofferresult->num_rows > 0) {
+		echo "<br><center><h2>Companies that offer the '$name':</h2></center>";
+		while ($row = $companiesthatofferresult->fetch_assoc()) {
+			echo "<center><h3>". $row["Name"] . "</h3></center>";
+		}
+		
+	}
 		
 	
 	
