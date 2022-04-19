@@ -3,7 +3,7 @@
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="bootstrap.min.css">
 		<link rel="stylesheet" href="navbar.css">
-		<link rel="stylesheet" href="table.css">
+		<link rel="stylesheet" href="custom.css">
 		
 		<style>
 			.bd-placeholder-img

@@ -4,6 +4,7 @@
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="bootstrap.min.css">
 		<link rel="stylesheet" href="navbar.css">
+		<link rel="stylesheet" href="custom.css">
 		
 		<style>
 			.bd-placeholder-img
@@ -53,6 +54,13 @@
 					</div>
 				</div>
 			</nav>
+			<center>
+				<form action="addphones.php" method="post">
+					<label for="id">ID</label>
+					<input name="id" id="id" min="1" max="4294967296" class="form-control" type="number" placeholder="Search" aria-label="Search" style="width: 600px">
+					<button name="submit" value="Submit" type="submit" class="btn btn-primary">Submit</button>
+				</form>
+			</center>
 		</main>
 		<script src="bootstrap.bundle.min.js"></script>
 	</body>
