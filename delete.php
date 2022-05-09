@@ -170,6 +170,27 @@
 					getItemsInPlan($row["PlanID"], "Internet", $conn);
 					echo "</td>";
 				}
+				// if this is from the companies table, then print out the plans that this company offers
+				elseif ($table == "Companies")
+				{
+					// prints out the plans that this company offers
+					$plan_query = "SELECT Plans.PlanID as ID, Plans.Name as Name FROM Offers, Plans WHERE Offers.CompanyID = '" . $row["CompanyID"] . "' AND Offers.PlanID = Plans.PlanID";
+					$plan_result = $conn->query($plan_query);
+					echo "<td>";
+					if ($plan_result->num_rows > 0)
+					{
+						echo "<center>";
+						echo "<table class='inner'>";
+						echo "<tr> <th>ID</th> <th>Name</th> </tr>";
+						while ($plan_row = $plan_result->fetch_assoc())
+						{
+							echo "<tr> <td>" . $plan_row["ID"] . "</td> <td>" . $plan_row["Name"] . "</td> </tr>";
+						}
+						echo "</table>";
+						echo "</center>";
+					}
+					echo "</td>";
+				}
 				// prints out the buttons to edit or delete this row at the end of the table
 				echo "<td> <form action='edit.html' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-primary'>Edit</button> </form>";
 				echo "<form action='delete.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-danger'>Delete</button> </form> </td>";
@@ -244,6 +265,27 @@
 					getItemsInPlan($row["PlanID"], "Phones", $conn);
 					getItemsInPlan($row["PlanID"], "Televisions", $conn);
 					getItemsInPlan($row["PlanID"], "Internet", $conn);
+					echo "</td>";
+				}
+				// if this is from the companies table, then print out the plans that this company offers
+				elseif ($table == "Companies")
+				{
+					// prints out the plans that this company offers
+					$plan_query = "SELECT Plans.PlanID as ID, Plans.Name as Name FROM Offers, Plans WHERE Offers.CompanyID = '" . $row["CompanyID"] . "' AND Offers.PlanID = Plans.PlanID";
+					$plan_result = $conn->query($plan_query);
+					echo "<td>";
+					if ($plan_result->num_rows > 0)
+					{
+						echo "<center>";
+						echo "<table class='inner'>";
+						echo "<tr> <th>ID</th> <th>Name</th> </tr>";
+						while ($plan_row = $plan_result->fetch_assoc())
+						{
+							echo "<tr> <td>" . $plan_row["ID"] . "</td> <td>" . $plan_row["Name"] . "</td> </tr>";
+						}
+						echo "</table>";
+						echo "</center>";
+					}
 					echo "</td>";
 				}
 				// prints out the buttons to edit or delete this row at the end of the table
