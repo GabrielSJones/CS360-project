@@ -126,11 +126,15 @@
 			{
 				echo "<th>$a</th>";
 			}
-			// if this is the Plans table, then print out 2 extra columns to show the companies that offers this plan and what devices / internet the plan provides
+			// if this is the Plans or Companies table, print extra columns for outputing links in relation tables
 			if ($table == "Plans")
 			{
 				echo "<th>Company / Companies</th>";
 				echo "<th>Provides</th>";
+			}
+			elseif ($table == "Companies")
+			{
+				echo "<th>Offers</th>";
 			}
 			// print out an extra column header to label the edit and delete buttons
 			echo "<th>Change</th>";
