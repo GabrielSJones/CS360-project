@@ -63,7 +63,7 @@
 	// outputs a table of rows from a table in the db
 	function printTable($table, $attributes, $conn)
 	{
-		// submits the query to $table to find all rows that have a name value that matches $name exactly
+		// submits the query to to get all rows from $table
 		$query = "SELECT * FROM $table";
 		$result = $conn->query($query);
 		

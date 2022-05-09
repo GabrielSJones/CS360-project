@@ -108,7 +108,7 @@
 	// outputs a table of rows from a table in the db
 	function printTable($table, $attributes, $conn)
 	{
-		// submits the query to $table to find all rows that have a name value that matches $name exactly
+		// submits the query to to get all rows from $table
 		$query = "SELECT * FROM $table";
 		$result = $conn->query($query);
 		
@@ -181,6 +181,82 @@
 		}
 	}
 	
+	// outputs a row from a table with a certain ID value
+	function printRowWithID($id, $idName, $table, $attributes, $conn)
+	{
+		// submits the query to $table to find the row with $idName value of $id
+		$query = "SELECT * FROM $table WHERE $idName = '$id'";
+		$result = $conn->query($query);
+		
+		// if there are any results, output the table
+		if ($result->num_rows > 0)
+		{
+			echo "<center> <h1>Row Deleted</h1> </center>";
+			echo "<center>";
+			echo "<table>";
+			
+			// prints each attribute name at the top of the table as table headers
+			echo "<tr>";
+			foreach ($attributes as $a)
+			{
+				echo "<th>$a</th>";
+			}
+			// if this is the Plans table, then print out 2 extra columns to show the companies that offers this plan and what devices / internet the plan provides
+			if ($table == "Plans")
+			{
+				echo "<th>Company / Companies</th>";
+				echo "<th>Provides</th>";
+			}
+			// print out an extra column header to label the edit and delete buttons
+			#echo "<th>Change</th>";
+			echo "</tr>";
+			// prints out each row that was returned from the query
+			while ($row = $result->fetch_assoc())
+			{
+				echo "<tr>";
+				foreach ($attributes as $a)
+				{
+					echo "<td>" . $row["$a"] . "</td>";
+				}
+				// if this is from the plans table, then print out the companies that offer this plan and all items that the plan offers in subtables
+				if ($table == "Plans")
+				{
+					// prints out companies that offers this plan
+					$comp_query = "SELECT Companies.CompanyID as ID, Companies.Name AS Name FROM Offers, Companies WHERE Offers.PlanID = '" . $row["PlanID"] . "' AND Offers.CompanyID = Companies.CompanyID";
+					$comp_result = $conn->query($comp_query);
+					echo "<td>";
+					if ($comp_result->num_rows > 0)
+					{
+						echo "<center>";
+						echo "<table class='inner'>";
+						echo "<tr> <th>ID</th> <th>Name</th> </tr>";
+						while ($comp_row = $comp_result->fetch_assoc())
+						{
+							echo "<tr> <td>" . $comp_row["ID"] . "</td> <td>" . $comp_row["Name"] . "</td> </tr>";
+						}
+						echo "</table>";
+						echo "</center>";
+					}
+					echo "</td>";
+					
+					// prints out items that this plan provides
+					echo "<td>";
+					getItemsInPlan($row["PlanID"], "Phones", $conn);
+					getItemsInPlan($row["PlanID"], "Televisions", $conn);
+					getItemsInPlan($row["PlanID"], "Internet", $conn);
+					echo "</td>";
+				}
+				// prints out the buttons to edit or delete this row at the end of the table
+				#echo "<td> <form action='edit.html' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-primary'>Edit</button> </form>";
+				#echo "<form action='delete.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-danger'>Delete</button> </form> </td>";
+				echo "</tr>";
+			}
+			
+			echo "</table>";
+			echo "</center>";
+		}
+	}
+	
 	$itemInfo = $_POST['iteminfo'];
 	$itemInfo = explode("+", $itemInfo);
 	
@@ -204,10 +280,8 @@
 	{
 		$itemID = "PlanID";
 		$attributes = array("PlanID", "Name", "Price");
-		if ($conn->query("DELETE FROM Provides WHERE PlanID = '$itemInfo[1]'") === TRUE and $conn->query("DELETE FROM Offers WHERE PlanID = '$itemInfo[1]'") === TRUE)
-		{
-		}
-		else
+		printRowWithID($itemInfo[1], $itemID, $itemInfo[0], $attributes, $conn);
+		if ($conn->query("DELETE FROM Provides WHERE PlanID = '$itemInfo[1]'") !== TRUE or $conn->query("DELETE FROM Offers WHERE PlanID = '$itemInfo[1]'") !== TRUE)
 		{
 			echo "<h1>Error: Row was not deleted</h1>";
 			echo "<br>";
@@ -222,10 +296,8 @@
 	{
 		$itemID = "CompanyID";
 		$attributes = array("CompanyID", "Name");
-		if ($conn->query("DELETE FROM Offers WHERE CompanyID = '$itemInfo[1]'") === TRUE)
-		{
-		}
-		else
+		printRowWithID($itemInfo[1], $itemID, $itemInfo[0], $attributes, $conn);
+		if ($conn->query("DELETE FROM Offers WHERE CompanyID = '$itemInfo[1]'") !== TRUE)
 		{
 			echo "<h1>Error: Row was not deleted</h1>";
 			echo "<br>";
@@ -254,11 +326,9 @@
 			$itemType = "internet";
 			$attributes = array("InternetID", "Name", "DownloadSpeed", "UploadSpeed", "DataCap", "InternetType");
 		}
+		printRowWithID($itemInfo[1], $itemID, $itemInfo[0], $attributes, $conn);
 		
-		if ($conn->query("DELETE FROM Provides WHERE ItemID = '$itemInfo[1]' AND ItemType = '$itemType'") === TRUE)
-		{
-		}
-		else
+		if ($conn->query("DELETE FROM Provides WHERE ItemID = '$itemInfo[1]' AND ItemType = '$itemType'") !== TRUE)
 		{
 			echo "<h1>Error: Row was not deleted</h1>";
 			echo "<br>";
@@ -268,10 +338,7 @@
 		echo "<br>";
 	}
 	
-	if ($conn->query("DELETE FROM $itemInfo[0] WHERE $itemID = '$itemInfo[1]'") === TRUE)
-		{
-		}
-		else
+	if ($conn->query("DELETE FROM $itemInfo[0] WHERE $itemID = '$itemInfo[1]'") !== TRUE)
 		{
 			echo "<h1>Error: Row was not deleted</h1>";
 			echo "<br>";
