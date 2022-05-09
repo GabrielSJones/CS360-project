@@ -54,7 +54,158 @@
 					</div>
 				</div>
 			</nav>
+			<!-- Place to input values for the new row in the table -->
+			<center>
+				<h1>Add Row to Televisions Table</h1>
+				<form action="addtvs.php" method="post">
+					<table>
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Size</th>
+							<th>Screen Type</th>
+							<th>HDR</th>
+							<th>Resolution</th>
+							<th>Refresh Rate</th>
+							<th>Manufacturer</th>
+						</tr>
+						<tr>
+							<td>
+								<input name="ID" min="1" max="4294967296" class="form-control" type="number" placeholder="ID" aria-label="Search" required>
+							</td>
+							<td>
+								<input name="Name" class="form-control" type="text" placeholder="Name" aria-label="Search" required>
+							</td>
+							<td>
+								<input name="Size" min="1" max="4294967296" class="form-control" type="number" placeholder="Size" aria-label="Search" required>
+							</td>
+							<td>
+								<select name="ScreenType" required>
+									<option value="OLED">OLED</option>
+									<option value="QLED">QLED</option>
+								</select>
+							</td>
+							<td>
+								<select name="HDR" required>
+									<option value="yes">Yes</option>
+									<option value="no">No</option>
+								</select>
+							</td>
+							<td>
+								<select name="Resolution" required>
+									<option value="FHD">FHD</option>
+									<option value="4K">4K</option>
+								</select>
+							</td>
+							<td>
+								<input name="RefreshRate" min="1" max="4294967296" class="form-control" type="number" placeholder="Refresh Rate" aria-label="Search" required>
+							</td>
+							<td>
+								<input name="Manufacturer" class="form-control" type="text" placeholder="Manufacturer" aria-label="Search" required>
+							</td>
+						</tr>
+					</table>
+					<button name="submit" value="Submit" type="submit" class="btn btn-primary">Submit</button>
+				</form>
+			</center>
 		</main>
 		<script src="bootstrap.bundle.min.js"></script>
 	</body>
 </html>
+
+<?php
+	
+	// outputs a table of rows from a table in the db
+	function printTable($table, $attributes, $conn)
+	{
+		// submits the query to $table to find all rows that have a name value that matches $name exactly
+		$query = "SELECT * FROM $table";
+		$result = $conn->query($query);
+		
+		// if there are any results, output the table
+		if ($result->num_rows > 0)
+		{
+			echo "<center> <h1>$table</h1> </center>";
+			echo "<center>";
+			echo "<table>";
+			
+			// prints each attribute name at the top of the table as table headers
+			echo "<tr>";
+			foreach ($attributes as $a)
+			{
+				echo "<th>$a</th>";
+			}
+			// if this is the Plans table, then print out 2 extra columns to show the companies that offers this plan and what devices / internet the plan provides
+			if ($table == "Plans")
+			{
+				echo "<th>Company / Companies</th>";
+				echo "<th>Provides</th>";
+			}
+			// print out an extra column header to label the edit and delete buttons
+			echo "<th>Change</th>";
+			echo "</tr>";
+			// prints out each row that was returned from the query
+			while ($row = $result->fetch_assoc())
+			{
+				echo "<tr>";
+				foreach ($attributes as $a)
+				{
+					echo "<td>" . $row["$a"] . "</td>";
+				}
+				// if this is from the plans table, then print out the companies that offer this plan and all items that the plan offers in subtables
+				if ($table == "Plans")
+				{
+					// prints out companies that offers this plan
+					$comp_query = "SELECT Companies.CompanyID as ID, Companies.Name AS Name FROM Offers, Companies WHERE Offers.PlanID = '" . $row["PlanID"] . "' AND Offers.CompanyID = Companies.CompanyID";
+					$comp_result = $conn->query($comp_query);
+					echo "<td>";
+					if ($comp_result->num_rows > 0)
+					{
+						echo "<center>";
+						echo "<table class='inner'>";
+						echo "<tr> <th>ID</th> <th>Name</th> </tr>";
+						while ($comp_row = $comp_result->fetch_assoc())
+						{
+							echo "<tr> <td>" . $comp_row["ID"] . "</td> <td>" . $comp_row["Name"] . "</td> </tr>";
+						}
+						echo "</table>";
+						echo "</center>";
+					}
+					echo "</td>";
+					
+					// prints out items that this plan provides
+					echo "<td>";
+					getItemsInPlan($row["PlanID"], "Phones", $conn);
+					getItemsInPlan($row["PlanID"], "Televisions", $conn);
+					getItemsInPlan($row["PlanID"], "Internet", $conn);
+					echo "</td>";
+				}
+				// prints out the buttons to edit or delete this row at the end of the table
+				echo "<td> <form action='edit.html' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-primary'>Edit</button> </form>";
+				echo "<form action='delete.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-danger'>Delete</button> </form> </td>";
+				echo "</tr>";
+			}
+			
+			echo "</table>";
+			echo "</center>";
+		}
+	}
+	
+	// variables used to log into the mysql server
+	$servername = "localhost";
+	$username = "root";
+	$password = "";
+	$dbname = "company_database";
+	
+	// connects to the mysql server and crashes if it can't connect
+	$conn = new mysqli($servername, $username, $password, $dbname);
+	if ($conn->connect_error)
+	{
+		die("Connection failed: " . $conn->connect_error);
+	}
+	
+	// print out the current phones table
+	$attributes = array("TVID", "Name", "Size", "ScreenType", "HDR", "Resolution", "RefreshRate", "Manufacturer");
+	printTable("Televisions", $attributes, $conn);
+	
+?>

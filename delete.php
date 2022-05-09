@@ -59,28 +59,41 @@
 </html>
 
 <?php
+	
 	$itemInfo = $_POST['iteminfo'];
 	$itemInfo = explode("+", $itemInfo);
 	
 	$itemID = "";
-	if ($itemInfo[0] == "Phones")
-	{
-		$itemID = "PhoneID";
-	}
-	elseif ($itemInfo[0] == "Televisions")
-	{
-		$itemID = "TVID";
-	}
-	elseif ($itemInfo[0] == "Internet")
-	{
-		$itemID = "InternetID";
-	}
-	elseif ($itemInfo[0] == "Plans")
+	$itemType = "";
+	if ($itemInfo[0] == "Plans")
 	{
 		$itemID = "PlanID";
 		echo "DELETE FROM Provides WHERE PlanID = '$itemInfo[1]'";
 		echo "<br>";
+		echo "DELETE FROM Offers WHERE PlanID = '$itemInfo[1]'";
+		echo "<br>";
+	}
+	else
+	{
+		if ($itemInfo[0] == "Phones")
+		{
+			$itemID = "PhoneID";
+			$itemType = "phone";
+		}
+		elseif ($itemInfo[0] == "Televisions")
+		{
+			$itemID = "TVID";
+			$itemType = "television";
+		}
+		elseif ($itemInfo[0] == "Internet")
+		{
+			$itemID = "InternetID";
+			$itemType = "internet";
+		}
+		echo "DELETE FROM Provides WHERE ItemID = '$itemInfo[1]' AND ItemType = '$itemType'";
+		echo "<br>";
 	}
 	
 	echo "DELETE FROM $itemInfo[0] WHERE $itemID = '$itemInfo[1]'";
+	
 ?>

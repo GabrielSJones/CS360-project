@@ -105,7 +105,8 @@
 		}
 	}
 	
-	// outputs a table of rows from a table with their 'Name' attribute equal to $name
+	// outputs a table of rows from a table in the db with their 'Name' attribute equal to $name
+	// returns 1 if there were any results, 0 if there weren't
 	function getRowsWithName($name, $table, $attributes, $conn)
 	{
 		// submits the query to $table to find all rows that have a name value that matches $name exactly
@@ -178,7 +179,7 @@
 					echo "</td>";
 				}
 				// prints out the buttons to edit or delete this row at the end of the table
-				echo "<td> <form action='edit.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-primary'>Edit</button> </form>";
+				echo "<td> <form action='edit.html' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-primary'>Edit</button> </form>";
 				echo "<form action='delete.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-danger'>Delete</button> </form> </td>";
 				echo "</tr>";
 			}
