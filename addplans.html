@@ -58,3 +58,72 @@
 		<script src="bootstrap.bundle.min.js"></script>
 	</body>
 </html>
+
+<?php
+	
+	// prints out a select element with the names of every row in a table
+	function printTableSelect($table, $idName, $conn)
+	{
+		$results = $conn->query("SELECT $idName as ID, Name FROM $table");
+		if ($table == "Companies")
+		{
+			echo "<select name='$table' multiple='multiple' required>";
+		}
+		else
+		{
+			echo "<select name='$table' multiple='multiple'>";
+		}
+		
+		while ($row = $results->fetch_assoc())
+		{
+			echo "<option value='" . $row["ID"] . "'>" . $row["Name"] . "</option>";
+		}
+		
+		echo "</select>";
+	}
+	
+	// variables used to log into the mysql server
+	$servername = "localhost";
+	$username = "root";
+	$password = "";
+	$dbname = "company_database";
+	
+	// connects to the mysql server and crashes if it can't connect
+	$conn = new mysqli($servername, $username, $password, $dbname);
+	if ($conn->connect_error)
+	{
+		die("Connection failed: " . $conn->connect_error);
+	}
+	
+	echo "<center>";
+	echo "<h1>Add Row to Plans Table</h1>";
+	echo "<form action='addplans.php' method='post'>";
+	echo "<table>";
+	
+	echo "<tr> <th>ID</th> <th>Name</th> <th>Price</th> <th>Companies</th> <th>Phones</th> <th>Televisions</th> <th>Internet</th> </tr>";
+	
+	echo "<tr>";
+	echo "<td> <input name='ID' min='1' max='4294967296' class='form-control' type='number' placeholder='ID' aria-label='Search' required> </td>";
+	echo "<td> <input name='Name' class='form-control' type='text' placeholder='Name' aria-label='Search' required> </td>";
+	echo "<td> <input name='Price' min='1' max='4294967296' class='form-control' type='number' placeholder='Price' aria-label='Search' required> </td>";
+	echo "<td>";
+	printTableSelect("Companies", "CompanyID", $conn);
+	echo "</td>";
+	echo "<td>";
+	printTableSelect("Phones", "PhoneID", $conn);
+	echo "</td>";
+	echo "<td>";
+	printTableSelect("Televisions", "TVID", $conn);
+	echo "</td>";
+	echo "<td>";
+	printTableSelect("Internet", "InternetID", $conn);
+	echo "</td>";
+	echo "</tr>";
+	
+	echo "</table>";
+	echo "<button name='submit' value='Submit' type='submit' class='btn btn-primary'>Submit</button>";
+	
+	echo "</form>";
+	echo "</center>";
+	
+?>
