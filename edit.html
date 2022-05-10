@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
 	<head>
 		<meta charset="UTF-8">
@@ -105,6 +106,107 @@
 		}
 	}
 	
+	// outputs a table of rows from a table in the db
+	function printTable($table, $attributes, $conn)
+	{
+		// submits the query to to get all rows from $table
+		$query = "SELECT * FROM $table";
+		$result = $conn->query($query);
+		
+		// if there are any results, output the table
+		if ($result->num_rows > 0)
+		{
+			echo "<center> <h1>$table</h1> </center>";
+			echo "<center>";
+			echo "<table>";
+			
+			// prints each attribute name at the top of the table as table headers
+			echo "<tr>";
+			foreach ($attributes as $a)
+			{
+				echo "<th>$a</th>";
+			}
+			// if this is the Plans or Companies table, print extra columns for outputing links in relation tables
+			if ($table == "Plans")
+			{
+				echo "<th>Company / Companies</th>";
+				echo "<th>Provides</th>";
+			}
+			elseif ($table == "Companies")
+			{
+				echo "<th>Offers</th>";
+			}
+			// print out an extra column header to label the edit and delete buttons
+			echo "<th>Change</th>";
+			echo "</tr>";
+			// prints out each row that was returned from the query
+			while ($row = $result->fetch_assoc())
+			{
+				echo "<tr>";
+				foreach ($attributes as $a)
+				{
+					echo "<td>" . $row["$a"] . "</td>";
+				}
+				// if this is from the plans table, then print out the companies that offer this plan and all items that the plan offers in subtables
+				if ($table == "Plans")
+				{
+					// prints out companies that offers this plan
+					$comp_query = "SELECT Companies.CompanyID as ID, Companies.Name AS Name FROM Offers, Companies WHERE Offers.PlanID = '" . $row["PlanID"] . "' AND Offers.CompanyID = Companies.CompanyID";
+					$comp_result = $conn->query($comp_query);
+					echo "<td>";
+					if ($comp_result->num_rows > 0)
+					{
+						echo "<center>";
+						echo "<table class='inner'>";
+						echo "<tr> <th>ID</th> <th>Name</th> </tr>";
+						while ($comp_row = $comp_result->fetch_assoc())
+						{
+							echo "<tr> <td>" . $comp_row["ID"] . "</td> <td>" . $comp_row["Name"] . "</td> </tr>";
+						}
+						echo "</table>";
+						echo "</center>";
+					}
+					echo "</td>";
+					
+					// prints out items that this plan provides
+					echo "<td>";
+					getItemsInPlan($row["PlanID"], "Phones", $conn);
+					getItemsInPlan($row["PlanID"], "Televisions", $conn);
+					getItemsInPlan($row["PlanID"], "Internet", $conn);
+					echo "</td>";
+				}
+				// if this is from the companies table, then print out the plans that this company offers
+				elseif ($table == "Companies")
+				{
+					// prints out the plans that this company offers
+					$plan_query = "SELECT Plans.PlanID as ID, Plans.Name as Name FROM Offers, Plans WHERE Offers.CompanyID = '" . $row["CompanyID"] . "' AND Offers.PlanID = Plans.PlanID";
+					$plan_result = $conn->query($plan_query);
+					echo "<td>";
+					if ($plan_result->num_rows > 0)
+					{
+						echo "<center>";
+						echo "<table class='inner'>";
+						echo "<tr> <th>ID</th> <th>Name</th> </tr>";
+						while ($plan_row = $plan_result->fetch_assoc())
+						{
+							echo "<tr> <td>" . $plan_row["ID"] . "</td> <td>" . $plan_row["Name"] . "</td> </tr>";
+						}
+						echo "</table>";
+						echo "</center>";
+					}
+					echo "</td>";
+				}
+				// prints out the buttons to edit or delete this row at the end of the table
+				echo "<td> <form action='edit.html' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-primary'>Edit</button> </form>";
+				echo "<form action='delete.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-danger'>Delete</button> </form> </td>";
+				echo "</tr>";
+			}
+			
+			echo "</table>";
+			echo "</center>";
+		}
+	}
+	
 	// prints out a single row from a table with a given id
 	function displayRow($table, $id, $attributes, $conn)
 	{
@@ -205,6 +307,28 @@
 		}
 	}
 	
+	// prints out a select element with the names of every row in a table
+	function printTableSelect($table, $idName, $conn)
+	{
+		$selectName = $table . "[]";
+		$results = $conn->query("SELECT $idName as ID, Name FROM $table");
+		if ($table == "Companies")
+		{
+			echo "<select name='$selectName' multiple required>";
+		}
+		else
+		{
+			echo "<select name='$selectName' multiple>";
+		}
+		
+		while ($row = $results->fetch_assoc())
+		{
+			echo "<option value='" . $row["ID"] . "'>" . $row["Name"] . "</option>";
+		}
+		
+		echo "</select>";
+	}
+	
 	$itemInfo = $_POST['iteminfo'];
 	$itemInfo = explode("+", $itemInfo);
 	
@@ -249,15 +373,202 @@
 		#echo "SELECT Internet.Name as Name, provides.ItemID as ItemID FROM Internet, Provides, Plans WHERE provides.ItemType = 'internet' AND provides.ItemID = $itemInfo[0].$itemID AND provides.PlanID = '$itemInfo[1]'";
 		#echo "<br>";
 		#echo "SELECT Companies.Name as Name, offers.CompanyID as CompanyID FROM Companies, Offers WHERE ";
+		#echo "<br>";
 	}
 	elseif ($itemInfo[0] == "Companies")
 	{
 		$itemID = "CompanyID";
 		$attributes = array("CompanyID", "Name");
 		#echo "SELECT $itemInfo[0].Name as Name, offers.";
+		#echo "<br>";
 	}
 	
 	#echo "SELECT * FROM $itemInfo[0] WHERE $itemID = $itemInfo[1]";
 	displayRow($itemInfo[0], $itemInfo[1], $attributes, $conn);
+	
+	echo "<center> <h1>New Values</h1> </center>";
+	
+	if ($itemInfo[0] == "Phones")
+	{
+		echo "<center> <form action='edit.php' method='post'>
+					<table>
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Screen Size</th>
+							<th>Manufacturer</th>
+							<th>Refresh Rate</th>
+						</tr>
+						<tr>
+							<td>
+								<input name='ID' min='1' max='4294967296' class='form-control' type='number' placeholder='ID' aria-label='Search' required>
+							</td>
+							<td>
+								<input name='Name' class='form-control' type='text' placeholder='Name' aria-label='Search' required>
+							</td>
+							<td>
+								<input name='ScreenSize' min='1' max='4294967296' class='form-control' type='number' placeholder='Screen Size' aria-label='Search' required>
+							</td>
+							<td>
+								<input name='Manufacturer' class='form-control' type='text' placeholder='Manufacturer' aria-label='Search' required>
+							</td>
+							<td>
+								<input name='RefreshRate' min='1' max='4294967296' class='form-control' type='number' placeholder='Refresh Rate' aria-label='Search' required>
+							</td>
+						</tr>
+					</table>
+					<button name='Table' value='$itemInfo[0]' type='submit' class='btn btn-primary'>Submit</button>
+				</form> </center>";
+	}
+	else if ($itemInfo[0] == "Televisions")
+	{
+		echo "<center> <form action='edit.php' method='post'>
+					<table>
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Size</th>
+							<th>Screen Type</th>
+							<th>HDR</th>
+							<th>Resolution</th>
+							<th>Refresh Rate</th>
+							<th>Manufacturer</th>
+						</tr>
+						<tr>
+							<td>
+								<input name='ID' min='1' max='4294967296' class='form-control' type='number' placeholder='ID' aria-label='Search' required>
+							</td>
+							<td>
+								<input name='Name' class='form-control' type='text' placeholder='Name' aria-label='Search' required>
+							</td>
+							<td>
+								<input name='Size' min='1' max='4294967296' class='form-control' type='number' placeholder='Size' aria-label='Search' required>
+							</td>
+							<td>
+								<select name='ScreenType' required>
+									<option value='OLED'>OLED</option>
+									<option value='QLED'>QLED</option>
+								</select>
+							</td>
+							<td>
+								<select name='HDR' required>
+									<option value='yes'>Yes</option>
+									<option value='no'>No</option>
+								</select>
+							</td>
+							<td>
+								<select name='Resolution' required>
+									<option value='FHD'>FHD</option>
+									<option value='4K'>4K</option>
+								</select>
+							</td>
+							<td>
+								<input name='RefreshRate' min='1' max='4294967296' class='form-control' type='number' placeholder='Refresh Rate' aria-label='Search' required>
+							</td>
+							<td>
+								<input name='Manufacturer' class='form-control' type='text' placeholder='Manufacturer' aria-label='Search' required>
+							</td>
+						</tr>
+					</table>
+					<button name='Table' value='$itemInfo[0]' type='submit' class='btn btn-primary'>Submit</button>
+				</form> </center>";
+	}
+	else if ($itemInfo[0] == "Internet")
+	{
+		echo "<center> <form action='edit.php' method='post'>
+					<table>
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Download Speed</th>
+							<th>Upload Speed</th>
+							<th>Data Cap</th>
+							<th>Internet Type</th>
+						</tr>
+						<tr>
+							<td>
+								<input name='ID' min='1' max='4294967296' class='form-control' type='number' placeholder='ID' aria-label='Search' required>
+							</td>
+							<td>
+								<input name='Name' class='form-control' type='text' placeholder='Name' aria-label='Search' required>
+							</td>
+							<td>
+								<input name='DownloadSpeed' min='1' max='4294967296' class='form-control' type='number' placeholder='Screen Size' aria-label='Search' required>
+							</td>
+							<td>
+								<input name='UploadSpeed' min='1' max='4294967296' class='form-control' type='number' placeholder='Screen Size' aria-label='Search' required>
+							</td>
+							<td>
+								<input name='DataCap' min='1' max='4294967296' class='form-control' type='number' placeholder='Refresh Rate' aria-label='Search' required>
+							</td>
+							<td>
+								<select name='InternetType' required>
+									<option value='cable'>Cable</option>
+									<option value='fiber'>Fiber</option>
+								</select>
+							</td>
+						</tr>
+					</table>
+					<button name='Table' value='$itemInfo[0]' type='submit' class='btn btn-primary'>Submit</button>
+				</form> </center>";
+	}
+	else if ($itemInfo[0] == "Plans")
+	{
+		echo "<center>";
+	
+		// place to input values for the new row in the table
+		echo "<form action='edit.php' method='post'>";
+		echo "<table>";
+		
+		echo "<tr> <th>ID</th> <th>Name</th> <th>Price</th> <th>Companies</th> <th>Phones</th> <th>Televisions</th> <th>Internet</th> </tr>";
+		
+		echo "<tr>";
+		echo "<td> <input name='ID' min='1' max='4294967296' class='form-control' type='number' placeholder='ID' aria-label='Search' required> </td>";
+		echo "<td> <input name='Name' class='form-control' type='text' placeholder='Name' aria-label='Search' required> </td>";
+		echo "<td> <input name='Price' min='1' max='4294967296' class='form-control' type='number' placeholder='Price' aria-label='Search' required> </td>";
+		echo "<td>";
+		printTableSelect("Companies", "CompanyID", $conn);
+		echo "</td>";
+		echo "<td>";
+		printTableSelect("Phones", "PhoneID", $conn);
+		echo "</td>";
+		echo "<td>";
+		printTableSelect("Televisions", "TVID", $conn);
+		echo "</td>";
+		echo "<td>";
+		printTableSelect("Internet", "InternetID", $conn);
+		echo "</td>";
+		echo "</tr>";
+		
+		echo "</table>";
+		echo "<button name='Table' value='$itemInfo[0]' type='submit' class='btn btn-primary'>Submit</button>";
+		echo "</form>";
+		echo "</center>";
+	}
+	else if ($itemInfo[0] == "Companies")
+	{
+		echo "<center>";
+	
+		// place to input values for the new row in the table
+		echo "<form action='edit.php' method='post'>";
+		echo "<table>";
+		
+		echo "<tr> <th>ID</th> <th>Name</th> <th>Offers</th> </tr>";
+		
+		echo "<tr>";
+		echo "<td> <input name='ID' min='1' max='4294967296' class='form-control' type='number' placeholder='ID' aria-label='Search' required> </td>";
+		echo "<td> <input name='Name' class='form-control' type='text' placeholder='Name' aria-label='Search' required> </td>";
+		echo "<td>";
+		printTableSelect("Plans", "PlanID", $conn);
+		echo "</td>";
+		echo "</tr>";
+		
+		echo "</table>";
+		echo "<button name='Table' value='$itemInfo[0]' type='submit' class='btn btn-primary'>Submit</button>";
+		echo "</form>";
+		echo "</center>";
+	}
+	
+	printTable($itemInfo[0], $attributes, $conn);
 	
 ?>
