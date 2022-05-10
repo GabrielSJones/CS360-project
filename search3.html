@@ -60,17 +60,116 @@
 					Type 3 Search
 				</center>
 			</h1>
+			<!--
 			<form action="search3.php" method="post">
 				<center>
 					<input name="name" class="form-control" type="text" placeholder="Enter a plan name from below to see available devices..." aria-label="Box" style="width: 600px">
 				</center>
 			</form>
+			-->
 		</main>
 		<script src="bootstrap.bundle.min.js"></script>
 		
-		<form>
+		
 				<center>
+				
+					<form action="search3.php" method="post">
+						<br>
+						<table><tr><td>Price
+						
+						
+						<select name="PriceQuantifier" required>
+						<option value=">">Greater</option>
+						<option value="=">Equals</option>
+						<option value="<">Less</option>
+						<option value="ANY">ANY</option>				
+						</select>
+						
+													
+						
+						<select name="PriceAmount" required>
+						<option value="25">25</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+						<option value="150">150</option>
+						<option value="200">200</option>
+						<option value="250">250</option>
+						<option value="300">300</option>							
+						</select></td>
+						
+						
+						<td>Number of Phones
+						
+						<select name="PhonesQuantifier" required>
+						<option value=">">Greater</option>
+						<option value="=">Equals</option>
+						<option value="<">Less</option>
+						<option value="ANY">ANY</option>				
+						</select>
+						
+						<select name="NumOfPhones" required>
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>														
+						</select></td>
+						
+						<td>Number of Televisions
+
+						<select name="TelevisionsQuantifier" required>
+						<option value=">">Greater</option>
+						<option value="=">Equals</option>
+						<option value="<">Less</option>
+						<option value="ANY">ANY</option>				
+						</select>
+						
+						<select name="NumOfTelevisions" required>
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>														
+						</select></td>
+						
+						<td>Internet Download Speed
+						
+						<select name="InternetQuantifier" required>
+						<option value=">">Greater</option>
+						<option value="=">Equals</option>
+						<option value="<">Less</option>
+						<option value="ANY">ANY</option>				
+						</select>
+						
+						<select name="DownloadSpeed" required>
+						<option value="10">10</option>
+						<option value="20">20</option>
+						<option value="25">25</option>
+						<option value="50">50</option>
+						<option value="75">75</option>	
+						<option value="100">100</option>	
+						<option value="150">150</option>	
+						<option value="200">200</option>	
+						<option value="500">500</option>	
+						<option value="1000">1000</option>	
+						<option value="1500">1500</option>	
+						<option value="2000">2000</option>	
+						<option value="5000">5000</option>	
+						</select> mbps
+						</td>					
+						
+						
+						
+						</tr>												
+						
+						</table>
+						
+						<button name="submit" value="Submit" type="submit" class="btn btn-primary">Submit</button>
+					</form>
 				<?php
+				/*
 					//this block displays names of all plans in db
 					
 					// variables used to log into the mysql server
@@ -86,6 +185,8 @@
 					}
 					$sql = "SELECT Name,Price FROM plans ORDER BY `Price` ASC";
 						$result = $conn->query($sql);
+						
+						
 						echo "<br><table>";
 						echo "<tr><td><h1>Available Plan Names</h1></td><td><h1>Price</h1></td></tr></center>";
 						if ($result->num_rows > 0) {
@@ -101,9 +202,10 @@
 							
 						} 
 						else { echo "0 plan results - probably this is an error"; }
-					$conn->close();				
+					$conn->close();		
+				*/
 				?>
 				<center>
-		</form>
+		
 	</body>
 </html>
