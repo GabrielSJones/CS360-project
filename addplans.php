@@ -218,30 +218,26 @@
 		if ($table == "Companies")
 		{
 			echo "<tr> <th>ID</th> <th>Name</th> </tr>";
-			foreach ($ids as $id)
+			$query = "SELECT $idName as ID, Name FROM $table WHERE $idName IN ('" . implode("', '", $ids) . "')";
+			$result = $conn->query($query);
+			if ($result->num_rows > 0)
 			{
-				$result = $conn->query("SELECT $idName as ID, Name FROM $table WHERE $idName = '$id'");
-				if ($result->num_rows > 0)
+				while ($row = $result->fetch_assoc())
 				{
-					while ($row = $result->fetch_assoc())
-					{
-						echo "<tr> <td>" . $row["ID"] . "</td> <td>" . $row["Name"] . "</td> </tr>";
-					}
+					echo "<tr> <td>" . $row["ID"] . "</td> <td>" . $row["Name"] . "</td> </tr>";
 				}
 			}
 		}
 		else
 		{
 			echo "<tr> <th>Name</th> <th>ID</th> </tr>";
-			foreach ($ids as $id)
+			$query = "SELECT $idName as ID, Name FROM $table WHERE $idName IN ('" . implode("', '", $ids) . "')";
+			$result = $conn->query($query);
+			if ($result->num_rows > 0)
 			{
-				$result = $conn->query("SELECT $idName as ID, Name FROM $table WHERE $idName = '$id'");
-				if ($result->num_rows > 0)
+				while ($row = $result->fetch_assoc())
 				{
-					while ($row = $result->fetch_assoc())
-					{
-						echo "<tr> <td>" . $row["Name"] . "</td> <td>" . $row["ID"] . "</td> </tr>";
-					}
+					echo "<tr> <td>" . $row["Name"] . "</td> <td>" . $row["ID"] . "</td> </tr>";
 				}
 			}
 		}
@@ -317,49 +313,37 @@
 			$failed = FALSE;
 			if (isset($companies))
 			{
-				foreach ($companies as $company)
+				$query = "INSERT INTO Offers (CompanyID, PlanID) VALUES ('" . implode("', '$id'), ('", $companies) . "', '$id')";
+				if ($conn->query($query) !== TRUE)
 				{
-					if ($conn->query("INSERT INTO Offers (CompanyID, PlanID) VALUES ('$company', '$id')") !== TRUE)
-					{
-						$failed = TRUE;
-						break;
-					}
+					$failed = TRUE;
 				}
 			}
 			
 			if (!$failed and isset($phones))
 			{
-				foreach ($phones as $phone)
+				$query = "INSERT INTO Provides (PlanID, ItemID, ItemType) VALUES ('$id', '" . implode("', 'phone'), ('$id', '", $phones) . "', 'phone')";
+				if ($conn->query($query) !== TRUE)
 				{
-					if ($conn->query("INSERT INTO Provides (PlanID, ItemID, ItemType) VALUES ('$id', '$phone', 'phone')") !== TRUE)
-					{
-						$failed = TRUE;
-						break;
-					}
+					$failed = TRUE;
 				}
 			}
 			
 			if (!$failed and isset($tvs))
 			{
-				foreach ($tvs as $tv)
+				$query = "INSERT INTO Provides (PlanID, ItemID, ItemType) VALUES ('$id', '" . implode("', 'television'), ('$id', '", $tvs) . "', 'television')";
+				if ($conn->query($query) !== TRUE)
 				{
-					if ($conn->query("INSERT INTO Provides (PlanID, ItemID, ItemType) VALUES ('$id', '$tv', 'television')") !== TRUE)
-					{
-						$failed = TRUE;
-						break;
-					}
+					$failed = TRUE;
 				}
 			}
 			
 			if (!$failed and isset($internet))
 			{
-				foreach ($internet as $int)
+				$query = "INSERT INTO Provides (PlanID, ItemID, ItemType) VALUES ('$id', '" . implode("', 'internet'), ('$id', '", $internet) . "', 'internet')";
+				if ($conn->query($query) !== TRUE)
 				{
-					if ($conn->query("INSERT INTO Provides (PlanID, ItemID, ItemType) VALUES ('$id', '$int', 'internet')") !== TRUE)
-					{
-						$failed = TRUE;
-						break;
-					}
+					$failed = TRUE;
 				}
 			}
 			
