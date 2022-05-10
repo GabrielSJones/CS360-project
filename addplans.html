@@ -210,14 +210,15 @@
 	// prints out a select element with the names of every row in a table
 	function printTableSelect($table, $idName, $conn)
 	{
+		$selectName = $table . "[]";
 		$results = $conn->query("SELECT $idName as ID, Name FROM $table");
 		if ($table == "Companies")
 		{
-			echo "<select name='$table' multiple='multiple' required>";
+			echo "<select name='$selectName' multiple required>";
 		}
 		else
 		{
-			echo "<select name='$table' multiple='multiple'>";
+			echo "<select name='$selectName' multiple>";
 		}
 		
 		while ($row = $results->fetch_assoc())

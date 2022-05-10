@@ -166,7 +166,7 @@
 	function printTableSelect($table, $idName, $conn)
 	{
 		$results = $conn->query("SELECT $idName as ID, Name FROM $table");
-		echo "<select name='$table' multiple='multiple'>";
+		echo "<select name='$table' multiple>";
 		
 		while ($row = $results->fetch_assoc())
 		{
