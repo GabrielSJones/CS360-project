@@ -219,13 +219,18 @@
 		if ($conn->query($query) === TRUE)
 		{
 			$failed = FALSE;
-			if (isset($companies))
+			if (isset($plans))
 			{
 				$query = "INSERT INTO Offers (PlanID, CompanyID) VALUES ('" . implode("', '$id'), ('", $plans) . "', '$id')";
 				if ($conn->query($query) !== TRUE)
 				{
 					$failed = TRUE;
 				}
+			}
+			else
+			{
+				echo "companies not set";
+				echo "<br>";
 			}
 			
 			if (!$failed)

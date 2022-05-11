@@ -210,8 +210,6 @@
 	function displayPlanItems($table, $ids, $idName, $conn)
 	{
 		$query = $query = "SELECT $table.Name as Name, $table.$idName as ID FROM $table WHERE $table.$idName IN ('" . implode("', '", $ids) . "')";
-		#echo $query;
-		#echo "<br>";
 		$results = $conn->query($query);
 		
 		if ($results->num_rows > 0)
