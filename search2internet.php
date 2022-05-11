@@ -158,7 +158,7 @@
 			{
 				$query .= " AND";
 			}
-			$query .= " DataCap $DataCapType '$dataCape'";
+			$query .= " DataCap $dataCapType '$dataCap'";
 			$first = FALSE;
 		}
 		if ($internetType != "any")
