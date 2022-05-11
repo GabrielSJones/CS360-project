@@ -1,4 +1,3 @@
-<!doctype html>
 <html>
 	<head>
 		<meta charset="UTF-8">
@@ -54,27 +53,6 @@
 					</div>
 				</div>
 			</nav>
-			<!-- Type 2 Search Stuff -->
-			<h1>
-				<center>
-					Type 2 Search
-				</center>
-			</h1>
-			<form action='search2phones.html'>
-				<center>
-					<button name="submit" value="Submit" type="submit" class="btn btn-primary">Search Phones</button>
-				</center>
-			</form>
-			<form action='search2tvs.html'>
-				<center>
-					<button name="submit" value="Submit" type="submit" class="btn btn-primary">Search TVs</button>
-				</center>
-			</form>
-			<form action='search2internet.html'>
-				<center>
-					<button name="submit" value="Submit" type="submit" class="btn btn-primary">Search Internet</button>
-				</center>
-			</form>
 		</main>
 		<script src="bootstrap.bundle.min.js"></script>
 	</body>
