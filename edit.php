@@ -61,46 +61,23 @@
 <?php
 	
 	// outputs a table of items from $table that are going to be added to a plan
-	function displayPlanItems($table, $relation, $id, $idName, $ids, $idsName, $conn)
+	function displayPlanItems($table, $ids, $idName, $conn)
 	{
-		$query = "";
-		if ($relation == "Provides")
-		{
-			$itemType = "";
-			$itemIDName = "";
-			if ($table == "Phones")
-			{
-				$itemType = "phone";
-				$itemIDName = "PhoneID";
-			}
-			elseif ($table == "Televisions")
-			{
-				$itemType = "television";
-				$itemIDName = "TVID";
-			}
-			elseif ($table == "Internet")
-			{
-				$itemType = "internet";
-				$itemIDName = "InternetID";
-			}
-			$query = "SELECT $table.Name as Name, $table.$itemIDName as ID FROM $table, $relation WHERE $relation.$idName = '$id' AND $relation.$idsName IN ('" . implode("', '", $ids) . "') AND $relation.$idsName = $table.$itemIDName AND $relation.ItemType = '$itemType'";
-		}
-		else
-		{
-			$query = "SELECT $table.Name as Name, $table.$idsName as ID FROM $table, $relation WHERE $relation.$idName = '$id' AND $relation.$idsName IN ('" . implode("', '", $ids) . "') AND $relation.$idsName = $table.$idsName";
-		}
+		$query = $query = "SELECT $table.Name as Name, $table.$idName as ID FROM $table WHERE $table.$idName IN ('" . implode("', '", $ids) . "')";
+		#echo $query;
+		#echo "<br>";
 		$results = $conn->query($query);
 		
 		if ($results->num_rows > 0)
 		{
-			if ($relation == "Provides")
+			if ($table == "Phones" or $table == "Televisions" or $table == "Internet")
 			{
 				echo "<center> <h1>$table</h1> </center>";
 			}
 			
 			echo "<center> <table class='inner'>";
 			
-			if ($relation == "Provides")
+			if ($table == "Phones" or $table == "Televisions" or $table == "Internet")
 			{
 				echo "<tr> <th>Name</th> <th>ItemID</th> </tr>";
 				while ($row = $results->fetch_assoc())
@@ -140,22 +117,22 @@
 			if ($i == 3 and $table == "Plans")
 			{
 				echo "<td>";
-				displayPlanItems("Companies", "Offers", $values[0], "PlanID", $values[$i], "CompanyID", $conn);
+				displayPlanItems("Companies", $values[$i], "CompanyID", $conn);
 				echo "</td>";
 			}
 			elseif ($i > 3 and $table == "Plans")
 			{
 				echo "<td>";
-				displayPlanItems("Phones", "Provides", $values[0], "PlanID", $values[$i], "ItemID", $conn);
-				displayPlanItems("Televisions", "Provides", $values[0], "PlanID", $values[$i], "ItemID", $conn);
-				displayPlanItems("Internet", "Provides", $values[0], "PlanID", $values[$i], "ItemID", $conn);
+				displayPlanItems("Phones", $values[$i], "PhoneID", $conn);
+				displayPlanItems("Televisions", $values[$i], "TVID", $conn);
+				displayPlanItems("Internet", $values[$i], "InternetID", $conn);
 				echo "</td>";
 				$i = count($values);
 			}
 			elseif ($i > 1 and $table == "Companies")
 			{
 				echo "<td>";
-				displayPlanItems("Plans", "Offers", $values[0], "CompanyID", $values[$i], "PlanID", $conn);
+				displayPlanItems("Plans", $values[$i], "PlanID", $conn);
 				echo "</td>";
 			}
 			else
