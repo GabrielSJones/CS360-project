@@ -60,6 +60,152 @@
 
 <?php
 	
+	// outputs a table of items from $table that are provided by $planID
+	function getItemsInPlan($planID, $table, $conn)
+	{
+		// gets the correct strings to input into the query based on the table it's pulling from
+		$IDName = "";
+		$item_type = "";
+		if ($table == "Phones")
+		{
+			$IDName = "PhoneID";
+			$item_type = "phone";
+		}
+		elseif ($table == "Televisions")
+		{
+			$IDName = "TVID";
+			$item_type = "television";
+		}
+		else
+		{
+			$IDName = "InternetID";
+			$item_type = "internet";
+		}
+		
+		// submits the query to $table to find all items provided by $planID
+		$query = "SELECT $table.Name AS Name, provides.ItemID AS ItemID FROM $table, provides WHERE provides.ItemType = '$item_type' AND provides.ItemID = $table.$IDName AND provides.PlanID = '$planID'";
+		$result = $conn->query($query);
+		
+		// if there are any results, output them in a table
+		if ($result->num_rows > 0)
+		{
+			echo "<center> <h2>$table</h2> </center>";
+			echo "<center>";
+			echo "<table class='inner'>";
+			
+			echo "<tr> <th>Name</th> <th>ItemID</th> </tr>";
+			// prints out each row that returned from the query
+			while ($row = $result->fetch_assoc())
+			{
+				echo "<tr> <td>" . $row["Name"] . "</td> <td>" . $row["ItemID"] . "</td> </tr>";
+			}
+			
+			echo "</table>";
+			echo "</center>";
+		}
+	}
+	
+	// outputs a table of rows from a table in the db
+	function printTable($table, $attributes, $conn)
+	{
+		// submits the query to to get all rows from $table
+		$query = "SELECT * FROM $table";
+		$result = $conn->query($query);
+		
+		// if there are any results, output the table
+		if ($result->num_rows > 0)
+		{
+			echo "<center> <h1>$table</h1> </center>";
+			echo "<center>";
+			echo "<table>";
+			
+			// prints each attribute name at the top of the table as table headers
+			echo "<tr>";
+			foreach ($attributes as $a)
+			{
+				echo "<th>$a</th>";
+			}
+			// if this is the Plans or Companies table, print extra columns for outputing links in relation tables
+			if ($table == "Plans")
+			{
+				echo "<th>Company / Companies</th>";
+				echo "<th>Provides</th>";
+			}
+			elseif ($table == "Companies")
+			{
+				echo "<th>Offers</th>";
+			}
+			// print out an extra column header to label the edit and delete buttons
+			echo "<th>Change</th>";
+			echo "</tr>";
+			// prints out each row that was returned from the query
+			while ($row = $result->fetch_assoc())
+			{
+				echo "<tr>";
+				foreach ($attributes as $a)
+				{
+					echo "<td>" . $row["$a"] . "</td>";
+				}
+				// if this is from the plans table, then print out the companies that offer this plan and all items that the plan offers in subtables
+				if ($table == "Plans")
+				{
+					// prints out companies that offers this plan
+					$comp_query = "SELECT Companies.CompanyID as ID, Companies.Name AS Name FROM Offers, Companies WHERE Offers.PlanID = '" . $row["PlanID"] . "' AND Offers.CompanyID = Companies.CompanyID";
+					$comp_result = $conn->query($comp_query);
+					echo "<td>";
+					if ($comp_result->num_rows > 0)
+					{
+						echo "<center>";
+						echo "<table class='inner'>";
+						echo "<tr> <th>ID</th> <th>Name</th> </tr>";
+						while ($comp_row = $comp_result->fetch_assoc())
+						{
+							echo "<tr> <td>" . $comp_row["ID"] . "</td> <td>" . $comp_row["Name"] . "</td> </tr>";
+						}
+						echo "</table>";
+						echo "</center>";
+					}
+					echo "</td>";
+					
+					// prints out items that this plan provides
+					echo "<td>";
+					getItemsInPlan($row["PlanID"], "Phones", $conn);
+					getItemsInPlan($row["PlanID"], "Televisions", $conn);
+					getItemsInPlan($row["PlanID"], "Internet", $conn);
+					echo "</td>";
+				}
+				// if this is from the companies table, then print out the plans that this company offers
+				elseif ($table == "Companies")
+				{
+					// prints out the plans that this company offers
+					$plan_query = "SELECT Plans.PlanID as ID, Plans.Name as Name FROM Offers, Plans WHERE Offers.CompanyID = '" . $row["CompanyID"] . "' AND Offers.PlanID = Plans.PlanID";
+					$plan_result = $conn->query($plan_query);
+					echo "<td>";
+					if ($plan_result->num_rows > 0)
+					{
+						echo "<center>";
+						echo "<table class='inner'>";
+						echo "<tr> <th>ID</th> <th>Name</th> </tr>";
+						while ($plan_row = $plan_result->fetch_assoc())
+						{
+							echo "<tr> <td>" . $plan_row["ID"] . "</td> <td>" . $plan_row["Name"] . "</td> </tr>";
+						}
+						echo "</table>";
+						echo "</center>";
+					}
+					echo "</td>";
+				}
+				// prints out the buttons to edit or delete this row at the end of the table
+				echo "<td> <form action='edit.html' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-primary'>Edit</button> </form>";
+				echo "<form action='delete.php' method='post'> <button name='iteminfo' value='$table+" . $row["$attributes[0]"] . "' type='submit' class='w-75 btn btn-danger'>Delete</button> </form> </td>";
+				echo "</tr>";
+			}
+			
+			echo "</table>";
+			echo "</center>";
+		}
+	}
+	
 	// outputs a table of items from $table that are going to be added to a plan
 	function displayPlanItems($table, $ids, $idName, $conn)
 	{
@@ -195,5 +341,6 @@
 	}
 	
 	displayRow($table, $header_atts, $values, $conn);
+	printTable($table, $attributes, $conn);
 	
 ?>
