@@ -261,22 +261,39 @@
 			if ($i == 3 and $table == "Plans")
 			{
 				echo "<td>";
-				displayPlanItems("Companies", $values[$i], "CompanyID", $conn);
+				if (isset($values[$i]))
+				{
+					displayPlanItems("Companies", $values[$i], "CompanyID", $conn);
+				}
 				echo "</td>";
 			}
 			elseif ($i > 3 and $table == "Plans")
 			{
 				echo "<td>";
-				displayPlanItems("Phones", $values[$i], "PhoneID", $conn);
-				displayPlanItems("Televisions", $values[$i], "TVID", $conn);
-				displayPlanItems("Internet", $values[$i], "InternetID", $conn);
+				if (isset($values[$i]))
+				{
+					displayPlanItems("Phones", $values[$i], "PhoneID", $conn);
+				}
+				$i++;
+				if (isset($values[$i]))
+				{
+					displayPlanItems("Televisions", $values[$i], "TVID", $conn);
+				}
+				$i++;
+				if (isset($values[$i]))
+				{
+					displayPlanItems("Internet", $values[$i], "InternetID", $conn);
+				}
+				$i++;
 				echo "</td>";
-				$i = count($values);
 			}
 			elseif ($i > 1 and $table == "Companies")
 			{
 				echo "<td>";
-				displayPlanItems("Plans", $values[$i], "PlanID", $conn);
+				if (isset($values[$i]))
+				{
+					displayPlanItems("Plans", $values[$i], "PlanID", $conn);
+				}
 				echo "</td>";
 			}
 			else
@@ -303,7 +320,10 @@
 		die("Connection failed: " . $conn->connect_error);
 	}
 	
-	$table = $_POST['Table'];
+	$info = $_POST['Info'];
+	$info = explode("+", $info);
+	$table = $info[0];
+	$id = $info[1];
 	$attributes = array();
 	$header_atts = array();
 	$values = array();
@@ -328,17 +348,135 @@
 	elseif ($table == "Plans")
 	{
 		$attributes = array("PlanID", "Name", "Price");
-		array_push($values, $_POST['ID'], $_POST['Name'], $_POST['Price'], $_POST['Companies'], $_POST['Phones'], $_POST['Televisions'], $_POST['Internet']);
+		array_push($values, $_POST['ID'], $_POST['Name'], $_POST['Price']);
+		if (isset($_POST['Companies']))
+		{
+			array_push($values, $_POST['Companies']);
+		}
+		else
+		{
+			array_push($values, NULL);
+		}
+		if (isset($_POST['Phones']))
+		{
+			array_push($values, $_POST['Phones']);
+		}
+		else
+		{
+			array_push($values, NULL);
+		}
+		if (isset($_POST['Televisions']))
+		{
+			array_push($values, $_POST['Televisions']);
+		}
+		else
+		{
+			array_push($values, NULL);
+		}
+		if (isset($_POST['Internet']))
+		{
+			array_push($values, $_POST['Internet']);
+		}
+		else
+		{
+			array_push($values, NULL);
+		}
 		array_push($header_atts, "ID", "Name", "Price", "Company / Companies", "Provides");
 	}
 	elseif ($table == "Companies")
 	{
 		$attributes = array("CompanyID", "Name");
-		array_push($values, $_POST['ID'], $_POST['Name'], $_POST['Plans']);
+		array_push($values, $_POST['ID'], $_POST['Name']);
+		if (isset($_POST['Plans']))
+		{
+			array_push($values, $_POST['Plans']);
+		}
+		else
+		{
+			array_push($values, NULL);
+		}
 		array_push($header_atts, "ID", "Name", "Offers");
 	}
 	
 	displayRow($table, $header_atts, $values, $conn);
+	
+	$query = "UPDATE $table SET " . $attributes[0] . " = '" . $values[0] . "'";
+	for ($i = 1; $i < count($attributes); $i++)
+	{
+		$query .= ", " . $attributes[$i] . " = '" . $values[$i] . "'";
+	}
+	$query .= " WHERE " . $attributes[0] . " = '$id'";
+	#echo "<center>";
+	#echo $query;
+	#echo "<br> </center>";
+	
+	$failed = FALSE;
+	if ($conn->query($query) !== TRUE)
+	{
+		$failed = TRUE;
+	}
+	
+	if (!$failed and $table == "Plans")
+	{
+		$query = "DELETE FROM Offers WHERE PlanID = '$id'";
+		$conn->query($query);
+		if (isset($values[3]))
+		{
+			$query = "INSERT INTO Offers (CompanyID, PlanID) VALUES ('" . implode("', '" . $values[0] . "'), ('", $values[3]) . "', '" . $values[0] . "')";
+			$conn->query($query);
+		}
+		
+		$query = "DELETE FROM Provides WHERE PlanID = '$id'";
+		$conn->query($query);
+		if (isset($values[4]))
+		{
+			$query = "INSERT INTO Provides (PlanID, ItemID, ItemType) VALUES ('" . $values[0] . "', '" . implode("', 'phone'), ('" . $values[0] . "',' ", $values[4]) . "', 'phone')";
+			$conn->query($query);
+		}
+		if (isset($values[5]))
+		{
+			$query = "INSERT INTO Provides (PlanID, ItemID, ItemType) VALUES ('" . $values[0] . "', '" . implode("', 'television'), ('" . $values[0] . "',' ", $values[5]) . "', 'television')";
+			$conn->query($query);
+		}
+		if (isset($values[6]))
+		{
+			$query = "INSERT INTO Provides (PlanID, ItemID, ItemType) VALUES ('" . $values[0] . "', '" . implode("', 'internet'), ('" . $values[0] . "',' ", $values[6]) . "', 'internet')";
+			$conn->query($query);
+		}
+		/*echo "<center>";
+		echo $delete1;
+		echo "<br>";
+		echo $add1;
+		echo "<br>";
+		echo $delete2;
+		echo "<br>";
+		echo $add2;
+		echo "<br>";
+		echo $add3;
+		echo "<br>";
+		echo $add4;
+		echo "<br> </center>";*/
+	}
+	if (!$failed and $table == "Companies")
+	{
+		$query = "DELETE FROM Offers WHERE CompanyID = '$id'";
+		$conn->query($query);
+		if (isset($values[2]))
+		{
+			$query = "INSERT INTO Offers (PlanID, CompanyID) VALUES ('" . implode("', '" . $values[0] . "'), ('", $values[2]) . "', '" . $values[0] . "')";
+			$conn->query($query);
+		}
+	}
+	
+	if (!$failed)
+	{
+		echo "<center> <h1>Row Successfully Updated</h1> </center>";
+	}
+	else
+	{
+		echo "<center> <h1>Error: Row was not Updated</h1> </center>";
+	}
+	
 	printTable($table, $attributes, $conn);
 	
 ?>
