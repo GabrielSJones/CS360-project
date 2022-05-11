@@ -62,6 +62,36 @@
 			</h1>
 			<form action='search2phones.php' method='post'>
 				<center>
+					<table>
+						<tr>
+							<th>Screen Size</th>
+							<th>Refresh Rate</th>
+							<th>Manufacturer</th>
+						</tr>
+						<tr>
+							<td>
+								<select name='ScreenSizeType' required>
+									<option value='any'>ANY</option>
+									<option value='>'>GREATER THAN</option>
+									<option value='='>EQUAL TO</option>
+									<option value='<'>LESS THAN</option>
+								</select>
+								<input name="ScreenSize" min="1" max="4294967296" class="form-control" type="number" placeholder="Screen Size" aria-label="Search" style='margin-top: 15px'>
+							</td>
+							<td>
+								<select name='RefreshRateType' required>
+									<option value='any'>ANY</option>
+									<option value='>'>GREATER THAN</option>
+									<option value='='>EQUAL TO</option>
+									<option value='<'>LESS THAN</option>
+								</select>
+								<input name="RefreshRate" min="1" max="4294967296" class="form-control" type="number" placeholder="Refresh Rate" aria-label="Search" style='margin-top: 15px'>
+							</td>
+							<td>
+								<input name="Manufacturer" class="form-control" type="text" placeholder="Manufacturer" aria-label="Search">
+							</td>
+						</tr>
+					</table>
 					<button name="submit" value="Submit" type="submit" class="btn btn-primary">Submit</button>
 				</center>
 			</form>
