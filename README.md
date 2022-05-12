@@ -13,3 +13,6 @@ SetHandler application/x-httpd-php
 
 3)
 move the index.html file from this directory to xampp\htdocs\dashboard and replace the index.html file there.
+
+4)
+take the company_database.sql file and import it using the xampp admin page
